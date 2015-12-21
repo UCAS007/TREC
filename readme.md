@@ -1,5 +1,15 @@
 # TREC
 
+# References
+- [Lucene API](http://lucene.apache.org/core/5_4_0/index.html)
+- [TREC demo](https://github.com/isoboroff/trec-demo)
+- [java pagerank](http://blog.csdn.net/chen_jp/article/details/7905235)
+
+# TASK
+- 通过50个topic 查询进行学习，并在50个topic　查询上进行测试
+- 需要用到的知识：相关反馈/查询扩展/链接分析
+
+
 # file introduction
 - info/docid_to_url
 
@@ -75,4 +85,12 @@ not relevant.
 </top>
 
 ...
+```
+
+# error or bug?
+
+```
+<title>payne.html</title
+-->
+<title>payne.html</title>
 ```

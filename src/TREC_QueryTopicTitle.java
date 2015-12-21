@@ -11,6 +11,8 @@ import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.en.EnglishAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.StringField;
@@ -29,6 +31,8 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.Version;
+import org.htmlparser.Parser;
+import org.htmlparser.beans.StringBean;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -43,14 +47,18 @@ public class TREC_QueryTopicTitle {
 		// 0. Specify the analyzer for tokenizing text.
 	    //    The same analyzer should be used for indexing and searching
 	    System.out.println("start learn lucence");
-	    StandardAnalyzer analyzer = new StandardAnalyzer();
+//	    StandardAnalyzer analyzer = new StandardAnalyzer();
+	    EnglishAnalyzer analyzer=new EnglishAnalyzer();
 
 	    // 1. create the index 
 //	    Directory index = new RAMDirectory();
 	    Directory index = FSDirectory.open(Paths.get("output/index.txt"));
 
 	    IndexWriterConfig config = new IndexWriterConfig(analyzer);
-
+	    config.setRAMBufferSizeMB(1024);
+	    config.setUseCompoundFile(false);
+	    config.setCommitOnClose(true);
+	    
 	    IndexWriter w = new IndexWriter(index, config);
 	    
 	    // 1.1 traverse file system
@@ -63,14 +71,11 @@ public class TREC_QueryTopicTitle {
 	    	if(filename.contains("WTX")&&filename.contains("B")){
 	    		addDoc(w,filename);
 		    	fileNum=fileNum+1;
-		    	if(fileNum%100==0){
-		    		System.out.println("fileNum = "+fileNum);
-		    	}
-		    	
-		    	System.out.println(filename);
+		    
+		    	System.out.println("fileNum="+fileNum+"\t fileName="+filename);
 	    	}
 	    	else{
-	    		System.out.println(filename+"********************************");
+	    		System.out.println("fileNum="+fileNum+"\t fileName="+filename+"***********");
 	    	}
 	    	
 	    	
@@ -82,7 +87,7 @@ public class TREC_QueryTopicTitle {
 	    search(index,analyzer);
 	}
 	
-	private static void search(Directory index,StandardAnalyzer analyzer) throws ParseException, IOException{
+	private static void search(Directory index,Analyzer analyzer) throws ParseException, IOException{
 		// 2. query
 	    String querystr = "What is a Bengals cat?";
 
@@ -111,6 +116,10 @@ public class TREC_QueryTopicTitle {
 	
 	private static void addDoc(IndexWriter w, String fileName) throws IOException {
 	    //"E:\\DataSet\\WT10G\\WTX001\\B01"
+		File log=new File("log.txt");
+		// public FileWriter(File file,boolean append)
+        FileWriter writer = new FileWriter(log, true);  
+        
 	    File in=new File(fileName);
 	    BufferedReader reader=new BufferedReader(new FileReader(in));
 
@@ -167,12 +176,16 @@ public class TREC_QueryTopicTitle {
 	    	    	
 	    	    	if(titleIdx==-1){
 		    	    	System.out.println("warning titleIdx **************************");
+		    	    	writer.write(filestr);
+		    	    	writer.write("\n warning titleIdx  *********************************** \n");
+		    	        
 		    	    }
 	    	    }
 	    	    
 	    	    
 	    	    if(docnum!=docnum_check){
 	    	    	System.out.println("warning docnum ******************************************");
+	    	    	writer.write("\n warning docnum  *********************************** \n");
 	    	    }
 	    	    
 	    	   
@@ -183,17 +196,8 @@ public class TREC_QueryTopicTitle {
 	    
 	    System.out.println("docnum ="+docnum+"\t , docnum_check = "+docnum_check);
 	    reader.close();
+	    writer.close(); 
 	  }
-	
-	public static String removeHtmlTag(String content) {
-        Pattern p = Pattern.compile("<([a-zA-Z]+)[^<>]*>(.*?)</\\1>");
-        Matcher m = p.matcher(content);
-        if (m.find()) {
-            content = content.replaceAll("<([a-zA-Z]+)[^<>]*>(.*?)</\\1>", "$2");
-            content = removeHtmlTag(content);
-        }
-        return content;
-    }
 	
 	public static ArrayList<String> getFileList(String rootPath){
 		ArrayList<String> pathlist= new ArrayList<String>();
