@@ -1,4 +1,5 @@
 # TREC
+- [code readme](src/readme.md)
 
 # References
 - [Lucene API](http://lucene.apache.org/core/5_4_0/index.html)
