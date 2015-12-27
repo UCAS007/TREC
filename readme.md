@@ -10,6 +10,7 @@
 - 通过50个topic 查询进行学习，并在50个topic　查询上进行测试
 - 需要用到的知识：相关反馈/查询扩展/链接分析
 
+![MAP](./MAP.JPG "MAP")
 
 # file introduction
 - info/docid_to_url

@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
@@ -14,7 +15,9 @@ import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.core.WhitespaceAnalyzer;
 import org.apache.lucene.analysis.custom.CustomAnalyzer;
+import org.apache.lucene.analysis.core.LowerCaseFilter;
 import org.apache.lucene.analysis.en.EnglishAnalyzer;
+import org.apache.lucene.analysis.core.SimpleAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.StringField;
@@ -42,8 +45,9 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-
-
+// this is a test version to
+// index and test index, nothing relate to query topic tile!!!
+// for query topic tile, you need to see TREC.java
 public class TREC_QueryTopicTitle {
 	public static int debugFlag=0;
 	static long time0=0;
@@ -52,9 +56,38 @@ public class TREC_QueryTopicTitle {
 	static long usetime;
 	
 	public static void main(String[] args) throws IOException, ParseException {
+		System.out.println("start index .........");
 		index();
+		System.out.println("end index ..........");
+		
+		time1=System.currentTimeMillis();
+		System.out.println("start search ..........");
+		Analyzer analyzer = CustomAnalyzer.builder()
+	    		   .withTokenizer("Letter")
+	    		   .addTokenFilter("Lowercase")
+	    		   .addTokenFilter("PorterStem")
+	    		   .addTokenFilter("stop")
+	    		   .build();
+		Directory index = FSDirectory.open(Paths.get("output/index"));
+		String querystr="Last weekend, I went to see Jimmy Hollywood starring Joe Pesci";
+		
+	    search(querystr,index,analyzer);
+	    time2=System.currentTimeMillis();
+	    usetime=time2-time1;
+	    System.out.println("search use time "+usetime);
+		System.out.println("end searching ...........");
 	}
 	private static void index() throws IOException, ParseException{
+		File file=new File("output/index");
+		if(file.exists()&&file.isDirectory()){
+			System.out.println("index exist ...");
+			return;
+		}
+		else{
+			System.out.println("build index ...");
+		}
+		
+		
 		// 0. Specify the analyzer for tokenizing text.
 	    //    The same analyzer should be used for indexing and searching
 	    System.out.println("start learn lucence");
@@ -113,18 +146,17 @@ public class TREC_QueryTopicTitle {
 	    
 	    w.close();
 	    
-	    System.out.println("start search");
-	    search(index,analyzer);
 	}
 	
-	private static void search(Directory index,Analyzer analyzer) throws ParseException, IOException{
+	private static void search(String querystr,Directory index,Analyzer analyzer) throws ParseException, IOException{
 		// 2. query
-	    String querystr = "they choose to persecute";
+//	    String querystr = "they choose to persecute";
 
 	    // the "title" arg specifies the default field to use
 	    // when no field is explicitly specified in the query.
 	    Query q = new QueryParser("content", analyzer).parse(querystr);
-
+	    
+	    System.out.println(q);
 	    // 3. search
 	    int hitsPerPage = 10;
 	    IndexReader reader = DirectoryReader.open(index);
@@ -138,6 +170,7 @@ public class TREC_QueryTopicTitle {
 	    for(int i=0;i<hits.length;++i) {
 	      int docId = hits[i].doc;
 	      Document d = searcher.doc(docId);
+	    
 	      System.out.println((i + 1) + ". docno=" + d.get("docno") + " title=" + d.get("title"));
 //	      System.out.println("content=: "+d.get("content"));
 	    }
