@@ -12,3 +12,5 @@ xxx
 
 <title> xxx</title
 ```
+
+- InL2c7.0_0.res 输出数据格式

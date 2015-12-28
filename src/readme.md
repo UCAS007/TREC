@@ -76,11 +76,61 @@ fileNum=5157	 fileName=E:\DataSet\WT10G\WTX104\B07
 ```
 ## Search
 - 输出1000个(或更少)的相关文档，按降序排列好
-- 需要解决多义，拼写错误的问题
+- 需要解决多义，拼写错误,缩写的问题
 - 相关性分三级，但这只与评价有关，与搜索无关
 
+```
+correct-word error-word
+when whan
+tartan tartin
+benefits bennefits
+composition  compostion
+caribbean carribean
+rosebowl rose bowl 
+
+import org.gauner.jSpellCorrect.ToySpellingCorrector;
+ToySpellingCorrector sc = new ToySpellingCorrector();
+// train some data from a text file
+sc.trainFile("/tmp/big.txt");
+// train a single word
+sc.trainSingle("some word");
+// get the best suggestion
+System.out.println(sc.correct("Cads"));
+System.out.println(sc.correct("Dok"));
+System.out.println(sc.correct("Speling"));
+```
+
+## output
+
+```
+TREC返回结果格式为：
+
+<查询ID> Q0 <文档ID> <文档排序> <文档评分> <系统ID>
+
+例如：
+
+501 Q0 WTX046-B13-199 1 16.827150770678543 InL2c7.0
+
+其中Q0没有具体意义，仅起到分隔作用，方便结果文件的脚本处理。
+
+```
 
 ## Evoluation
 - 计算MAP
 
 ![](../MAP.JPG)
+
+
+##　改进
+```
+overview: file:///D:/yzbx_allthing/lucene-5.4.0/docs/core/org/apache/lucene/search/package-summary.html#package_description
+org.apache.lucene.queries.mlt.MoreLikeThisQuery
+org.apache.lucene.search.FuzzyQuery
+file:///D:/yzbx_allthing/lucene-5.4.0/docs/core/org/apache/lucene/search/similarities/package-summary.html
+file:///D:/yzbx_allthing/lucene-5.4.0/docs/core/org/apache/lucene/index/NumericDocValues.html
+```
+
+## 结果
+```
+rawMAP=7.304471564303862 feedbackMAP=6.189165466981146
+```

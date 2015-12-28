@@ -5,6 +5,8 @@
 - [Lucene API](http://lucene.apache.org/core/5_4_0/index.html)
 - [TREC demo](https://github.com/isoboroff/trec-demo)
 - [java pagerank](http://blog.csdn.net/chen_jp/article/details/7905235)
+- [spell correction](http://developer.gauner.org/jspellcorrect/#download)
+- [abbreviation](https://en.wiktionary.org/wiki/Wiktionary:Abbreviations_in_Webster)
 
 # TASK
 - 通过50个topic 查询进行学习，并在50个topic　查询上进行测试
